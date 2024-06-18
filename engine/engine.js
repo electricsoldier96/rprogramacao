@@ -13,8 +13,10 @@ let engine;
 let screenId;
 
 let gameScreen = {
-    width: 640,
-    height: 360
+    baseWidth: 1920,
+    baseHeight: 1080,
+    proportionX: 1,
+    proportionY: 1,
 };
 
 function CreateGameScreen() {
@@ -35,6 +37,8 @@ function CreateGameScreen() {
     window.addEventListener("resize", (event) => {
         UpdateGameScreen();
     });
+
+    UpdateGameScreen();
 
     console.log("[engine] criando canvas...");
 }
@@ -57,6 +61,11 @@ function UpdateGameScreen() {
     canvas.style.width = gameScreen.width + "px";
     canvas.style.height = gameScreen.height + "px";
 
+    // Calculo de proporções
+
+    gameScreen.proportionX = gameScreen.width / gameScreen.baseWidth;
+    gameScreen.proportionY = gameScreen.height / gameScreen.baseHeight;
+
     console.log("[engine] atualizando canvas: " + gameScreen.width + "x" + gameScreen.height + " px.");
 }
 
@@ -78,18 +87,36 @@ let splash_screen = {
     currentTime: 0,
     opacity: 1,
     startZoom: 0.8,
-    endZoom: 1.2,
+    endZoom: 1,
     fadeIn: 1000, // Duração de FadeIn
     fadeOut: 1000, // Duração de Fadeout
     blackout: 1000, // Duração de blackout
 }
 
-function StartSplashScreen(imageSrc,audioSrc) {
-    splash_screen.start_time = new Date().getTime();
-    splash_screen.end_time = splash_screen.start_time + splash_screen.duration;
-    splash_screen.fadeOutStart = splash_screen.duration - splash_screen.fadeIn - splash_screen.blackout;
-    splash_screen.blackoutStart = splash_screen.duration - splash_screen.blackout;  
-    screenId = 1;
+function StartSplashScreen(imageSrc) {
+   
+    splash_screen.img = new Image();
+    splash_screen.audio = new Audio();
+    
+    splash_screen.img.addEventListener("load", (event) => {
+        splash_screen.start_time = new Date().getTime();
+        splash_screen.end_time = splash_screen.start_time + splash_screen.duration;
+        splash_screen.fadeOutStart = splash_screen.duration - splash_screen.fadeIn - splash_screen.blackout;
+        splash_screen.blackoutStart = splash_screen.duration - splash_screen.blackout;
+        screenId = 1;
+
+        splash_screen.img.removeEventListener("load");
+
+        if(splash_screen.audio.complete)
+        {
+            splash_screen.audio.currentTime = 0;
+            splash_screen.audio.play();
+        }
+    });
+    
+    splash_screen.audio.src = audioSrc;
+    splash_screen.img.src = imageSrc;
+
 }
 
 function renderSplashScreen() {
@@ -99,6 +126,8 @@ function renderSplashScreen() {
     if(splash_screen.currentTime >= splash_screen.duration){
 
         screenId = 0;
+        splash_screen.img = false;
+        splash_screen.audio = false;
         EVENT_OnSplashScreenEnd();
     }
 
@@ -130,8 +159,8 @@ function renderSplashScreen() {
 
     // Renderiza
 
-    engine.fillStyle = "green";
-    engine.fillRect(0,0,gameScreen.width,gameScreen.height);
-    engine.fillStyle = "rgba(255,0,0," + splash_screen.opacity +")";
-    engine.fillRect(0.4*gameScreen.width,0.4*gameScreen.height,0.2*gameScreen.width,0.2*gameScreen.height);
+    engine.clearRect(0,0,gameScreen.width,gameScreen.height);
+    engine.globalAlpha = splash_screen.opacity;
+    engine.drawImage(splash_screen.img,0,0,gameScreen.proportionX * splash_screen.img.width * splash_screen.zoom,gameScreen.proportionY * splash_screen.img.height * splash_screen.zoom);
+    engine.globalAlpha = 1;
 }
