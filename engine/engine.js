@@ -65,6 +65,8 @@ function UpdateGameScreen() {
 
     gameScreen.proportionX = gameScreen.width / gameScreen.baseWidth;
     gameScreen.proportionY = gameScreen.height / gameScreen.baseHeight;
+    gameScreen.centerX = Math.round(gameScreen.width/2);
+    gameScreen.centerY = Math.round(gameScreen.height/2);
 
     console.log("[engine] atualizando canvas: " + gameScreen.width + "x" + gameScreen.height + " px.");
 }
@@ -73,6 +75,12 @@ function gameLoop()
 {
     if(screenId == 1){
         renderSplashScreen();
+    }
+    else
+    {
+        engine.fillStyle = "white";
+        engine.font = "2vw calibri"
+        engine.fillText("E ai, o que acontece agora?",100,100)
     }
 
     window.requestAnimationFrame(gameLoop);
@@ -104,7 +112,7 @@ function StartSplashScreen(imageSrc) {
         splash_screen.blackoutStart = splash_screen.duration - splash_screen.blackout;
         screenId = 1;
 
-        splash_screen.img.removeEventListener("load");
+        //splash_screen.img.removeEventListener("load");
     });
     
     splash_screen.img.src = imageSrc;
@@ -121,12 +129,18 @@ function renderSplashScreen() {
         splash_screen.img = false;
         splash_screen.audio = false;
         EVENT_OnSplashScreenEnd();
+        return;
     }
 
     // Calculo de ZOOM e opacidade.
 
     // Calculo de função de ZOOM, é um aumento fixo.
     splash_screen.zoom = splash_screen.startZoom + (splash_screen.endZoom - splash_screen.startZoom) * splash_screen.currentTime / splash_screen.duration;
+
+    const image_positions = {
+        offsetX: (splash_screen.img.width * splash_screen.zoom * gameScreen.proportionX) / 2,
+        offsetY: (splash_screen.img.height * splash_screen.zoom* gameScreen.proportionY) / 2
+    }
 
     // opacidade começa em 0 e vai até 1 em 1 segundo em uma função quadratica
     // depois mantém em 1 por 2 segundos, e no final faz a função quadratica inversa por 1s, o ultimo segundo é tela preta.
@@ -153,6 +167,10 @@ function renderSplashScreen() {
 
     engine.clearRect(0,0,gameScreen.width,gameScreen.height);
     engine.globalAlpha = splash_screen.opacity;
-    engine.drawImage(splash_screen.img,0,0,gameScreen.proportionX * splash_screen.img.width * splash_screen.zoom,gameScreen.proportionY * splash_screen.img.height * splash_screen.zoom);
+    engine.drawImage(splash_screen.img,gameScreen.centerX - image_positions.offsetX,gameScreen.centerY - image_positions.offsetY,gameScreen.proportionX * splash_screen.img.width * splash_screen.zoom,gameScreen.proportionY * splash_screen.img.height * splash_screen.zoom);
+    
+    //engine.strokeStyle = "pink";
+    //engine.strokeRect(gameScreen.centerX - image_positions.offsetX,gameScreen.centerY - image_positions.offsetY,gameScreen.proportionX * splash_screen.img.width * splash_screen.zoom,gameScreen.proportionY * splash_screen.img.height * splash_screen.zoom);
+
     engine.globalAlpha = 1;
 }
