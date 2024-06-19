@@ -96,8 +96,7 @@ let splash_screen = {
 function StartSplashScreen(imageSrc) {
    
     splash_screen.img = new Image();
-    splash_screen.audio = new Audio();
-    
+
     splash_screen.img.addEventListener("load", (event) => {
         splash_screen.start_time = new Date().getTime();
         splash_screen.end_time = splash_screen.start_time + splash_screen.duration;
@@ -106,15 +105,8 @@ function StartSplashScreen(imageSrc) {
         screenId = 1;
 
         splash_screen.img.removeEventListener("load");
-
-        if(splash_screen.audio.complete)
-        {
-            splash_screen.audio.currentTime = 0;
-            splash_screen.audio.play();
-        }
     });
     
-    splash_screen.audio.src = audioSrc;
     splash_screen.img.src = imageSrc;
 
 }
