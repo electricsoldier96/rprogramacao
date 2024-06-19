@@ -2,6 +2,8 @@ Olá!
 
 Esse jogo é programado com ideias colaborativas da comunidade /r/programacao do reddit!
 
+Você pode acessa-lo aqui: https://electricsoldier96.github.io/rprogramacao_game/
+
 A cada dia, um novo post é criado na comunidade, e o comentário mais bem votado é programado no jogo para o próximo dia, é claro que isso depende da viabilidade de tempo.
 
 O jogo é feito em JS com canvas, em 2D.
