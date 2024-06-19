@@ -1,7 +1,7 @@
 function StartEngine() 
 {
     CreateGameScreen();
-    StartSplashScreen("assets/img/splash/splash.png","assets/audio/splash/intro.mp3");
+    StartSplashScreen("assets/img/splash/splash.png");
 }
 
 function EVENT_OnSplashScreenEnd(){
